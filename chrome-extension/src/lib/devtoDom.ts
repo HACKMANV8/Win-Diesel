@@ -220,3 +220,63 @@ export function replaceProductsWithLinks(products: ProductLink[]): boolean {
 function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+export function findDevtoPublishButton(): HTMLElement | null {
+  // Look for the Publish button - it's usually a button with text "Publish"
+  const buttons = Array.from(
+    document.querySelectorAll("button")
+  ) as HTMLButtonElement[];
+  for (const btn of buttons) {
+    const text = btn.textContent?.trim().toLowerCase();
+    if (text === "publish") {
+      return btn;
+    }
+  }
+  // Fallback: look for button with specific classes/attributes common to dev.to
+  const byAttribute = document.querySelector(
+    'button[type="submit"]'
+  ) as HTMLElement | null;
+  return byAttribute;
+}
+
+// Exported function for linking products - can be called from button click handler
+export async function linkProductsFromDevto(): Promise<{
+  success: boolean;
+  message: string;
+  count?: number;
+}> {
+  try {
+    const transcript = getDevtoEditorContent();
+    if (!transcript.trim()) {
+      return { success: false, message: "Editor is empty" };
+    }
+
+    // Import dynamically to avoid circular dependencies
+    const { createLinksForDevto } = await import("@lib/api");
+
+    const response = await createLinksForDevto({
+      transcript,
+      customer_id: "CUST006",
+      customer_name: "Anu",
+    });
+
+    const productLinks: ProductLink[] = response.products.map((p) => ({
+      product_name: p.product_name,
+      custom_link: p.custom_link,
+    }));
+
+    const ok = replaceProductsWithLinks(productLinks);
+
+    if (ok) {
+      return {
+        success: true,
+        message: `Linked ${productLinks.length} product(s)`,
+        count: productLinks.length,
+      };
+    } else {
+      return { success: false, message: "Editor not found" };
+    }
+  } catch (error: any) {
+    return { success: false, message: error?.message || "API call failed" };
+  }
+}
