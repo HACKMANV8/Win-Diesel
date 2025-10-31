@@ -35,4 +35,27 @@ export async function resolveAsins(candidates: ProductCandidate[]): Promise<Reso
   return items;
 }
 
+export type DevtoProductLink = {
+  product_name: string;
+  affiliate_link: string;
+  custom_link: string;
+};
+
+export type CreateLinksRequest = {
+  transcript: string;
+  customer_id: string;
+  customer_name: string;
+};
+
+export type CreateLinksResponse = {
+  customer_id: string;
+  customer_name: string;
+  products: DevtoProductLink[];
+};
+
+export async function createLinksForDevto(request: CreateLinksRequest): Promise<CreateLinksResponse> {
+  const res = await axios.post<CreateLinksResponse>('http://localhost:8000/api/create-links', request);
+  return res.data;
+}
+
 
