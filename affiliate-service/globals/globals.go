@@ -9,5 +9,5 @@ import (
 var (
 	Ctx         = context.Background()
 	RedisClient *redis.Client
-	BaseURL     = "http://localhost:8080" // Change this to your domain in production
+	BaseURL     = "https://1afe71742170.ngrok-free.app" // Change this to your domain in production
 )
