@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Upload Transcript Extractor</title>
+    <style>
+        body { 
+            width: 350px; 
+            padding: 20px; 
+            font-family: Arial, sans-serif; 
+            background: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .step {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1976d2;
+        }
+        .step-number {
+            background: #1976d2;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🎬 YouTube Upload Transcriber</h2>
+        <p>Automatically transcribes videos with AssemblyAI when you upload to YouTube</p>
+    </div>
+
+    <div class="step">
+        <span class="step-number">1</span>
+        <strong>Go to YouTube Studio</strong><br>
+        Navigate to <code>studio.youtube.com</code>
+    </div>
+
+    <div class="step">
+        <span class="step-number">2</span>
+        <strong>Start Video Upload</strong><br>
+        Click "CREATE" → "Upload videos"
+    </div>
+
+    <div class="step">
+        <span class="step-number">3</span>
+        <strong>Select Your Video</strong><br>
+        Choose a video file to upload
+    </div>
+
+    <div class="step">
+        <span class="step-number">4</span>
+        <strong>Get Transcript</strong><br>
+        A transcript panel will appear automatically!
+    </div>
+
+    <div class="status">
+        ✅ Extension is active and ready to transcribe your uploads!
+    </div>
+
+    <script>
+        // Simple popup script
+        console.log('YouTube Upload Transcriber popup loaded');
+        
+        // Add click handler to open YouTube Studio
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'CODE' && e.target.textContent === 'studio.youtube.com') {
+                chrome.tabs.create({ url: 'https://studio.youtube.com' });
+            }
+        });
+    </script>
+</body>
+</html>

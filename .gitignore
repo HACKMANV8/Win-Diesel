@@ -1,0 +1,21 @@
+# YouTube Upload Transcript Extractor - Configuration
+
+# Local config file with actual API key (DO NOT COMMIT)
+config.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Development files
+node_modules/
+npm-debug.log*
