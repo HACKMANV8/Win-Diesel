@@ -66,8 +66,8 @@ export default function YouTubeTranscriptionPanel() {
           sizeMB: Math.round(file.size / (1024 * 1024) * 100) / 100
         });
         
-        // Must be large enough to be a real video (at least 1MB)
-        if (file.size < 1024 * 1024) {
+        // Must be large enough to be a real video (at least 100KB to filter out thumbnails)
+        if (file.size < 100 * 1024) {
           console.log(`[YouTube Transcription] File ${i} too small, skipping`);
           continue;
         }
@@ -128,13 +128,13 @@ export default function YouTubeTranscriptionPanel() {
         lastModified: new Date(file.lastModified).toISOString()
       });
 
-      // Additional validation: file must be at least 1MB (videos are much larger)
-      if (file.size < 1024 * 1024) {
-        console.log('[YouTube Transcription] File too small (<1MB), likely not a video:', {
+      // Additional validation: file must be at least 100KB (to filter out thumbnails)
+      if (file.size < 100 * 1024) {
+        console.log('[YouTube Transcription] File too small (<100KB), likely not a video:', {
           name: file.name,
           type: file.type,
           size: file.size,
-          sizeMB: Math.round(file.size / (1024 * 1024) * 100) / 100
+          sizeKB: Math.round(file.size / 1024 * 100) / 100
         });
         return;
       }
