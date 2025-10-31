@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { transcribeVideo, TranscriptionStatus, TranscriptionResult } from '../lib/youtubeTranscription';
+import { createLinksForDevto, type DevtoProductLink } from '../lib/api';
+import { replaceProductsInYouTubeDescription, type ProductLink } from '../lib/youtubeDomEditor';
 
 export default function YouTubeTranscriptionPanel() {
   const [status, setStatus] = useState<TranscriptionStatus>('idle');
   const [transcript, setTranscript] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [fileName, setFileName] = useState<string>('');
+  const [products, setProducts] = useState<ProductLink[]>([]);
+  const [linkingStatus, setLinkingStatus] = useState<'idle' | 'creating' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     console.log('[YouTube Transcription Panel] Component mounted, setting up file interceptor');
@@ -199,6 +203,48 @@ export default function YouTubeTranscriptionPanel() {
         if (result.status === 'completed') {
           setTranscript(result.transcript);
           console.log('[YouTube Transcription] Transcript received, length:', result.transcript.length);
+          
+          // Step 2: Send transcript to backend to get product links
+          console.log('[YouTube Transcription] Sending transcript to backend...');
+          setLinkingStatus('creating');
+          try {
+            const response = await createLinksForDevto({
+              transcript: result.transcript,
+              customer_id: 'CUST006',
+              customer_name: 'Anu',
+            });
+
+            console.log('[YouTube Transcription] Received products from backend:', response.products.length);
+            
+            // Convert to ProductLink format
+            const productLinks: ProductLink[] = response.products.map((p) => ({
+              product_name: p.product_name,
+              custom_link: p.custom_link,
+            }));
+            
+            setProducts(productLinks);
+
+            // Step 3: Insert links into YouTube description
+            if (productLinks.length > 0) {
+              console.log('[YouTube Transcription] Inserting links into description...');
+              const insertSuccess = replaceProductsInYouTubeDescription(productLinks);
+              if (insertSuccess) {
+                console.log('[YouTube Transcription] Successfully inserted product links');
+                setLinkingStatus('success');
+              } else {
+                console.warn('[YouTube Transcription] Failed to find description field');
+                setLinkingStatus('error');
+                setError('Could not find YouTube description field. Please ensure you are on the video details page.');
+              }
+            } else {
+              console.log('[YouTube Transcription] No products found in transcript');
+              setLinkingStatus('idle');
+            }
+          } catch (linkError) {
+            console.error('[YouTube Transcription] Failed to create links:', linkError);
+            setLinkingStatus('error');
+            setError(`Failed to create links: ${linkError instanceof Error ? linkError.message : 'Unknown error'}`);
+          }
         } else if (result.status === 'error') {
           const errorMsg = result.error || 'Transcription failed';
           // Provide more helpful error messages
@@ -456,6 +502,99 @@ export default function YouTubeTranscriptionPanel() {
               }}
             >
               {transcript}
+            </div>
+          </div>
+        )}
+
+        {/* Linking status */}
+        {linkingStatus !== 'idle' && (
+          <div style={{ marginTop: '12px' }}>
+            <div
+              style={{
+                padding: '8px 12px',
+                backgroundColor:
+                  linkingStatus === 'success'
+                    ? '#d4edda'
+                    : linkingStatus === 'error'
+                    ? '#f8d7da'
+                    : '#fff3cd',
+                border:
+                  linkingStatus === 'success'
+                    ? '1px solid #c3e6cb'
+                    : linkingStatus === 'error'
+                    ? '1px solid #f5c6cb'
+                    : '1px solid #ffeaa7',
+                borderRadius: '4px',
+                fontSize: '13px',
+                color:
+                  linkingStatus === 'success'
+                    ? '#155724'
+                    : linkingStatus === 'error'
+                    ? '#721c24'
+                    : '#856404',
+              }}
+            >
+              {linkingStatus === 'creating' && '🔗 Creating product links...'}
+              {linkingStatus === 'success' && `✅ ${products.length} product link(s) added to description`}
+              {linkingStatus === 'error' && '❌ Failed to add links'}
+            </div>
+          </div>
+        )}
+
+        {/* Products list */}
+        {products.length > 0 && (
+          <div style={{ marginTop: '12px' }}>
+            <div
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '8px',
+                color: '#333',
+              }}
+            >
+              Products found ({products.length}):
+            </div>
+            <div
+              style={{
+                maxHeight: '200px',
+                overflowY: 'auto',
+                border: '1px solid #e0e0e0',
+                borderRadius: '4px',
+              }}
+            >
+              {products.map((product, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '8px 12px',
+                    borderBottom: index < products.length - 1 ? '1px solid #e0e0e0' : 'none',
+                    fontSize: '12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 500,
+                      color: '#333',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {product.product_name}
+                  </div>
+                  <a
+                    href={product.custom_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#0066cc',
+                      textDecoration: 'none',
+                      fontSize: '11px',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {product.custom_link}
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         )}
