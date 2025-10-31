@@ -19,14 +19,18 @@
   "host_permissions": [
     "https://medium.com/*",
     "https://*.medium.com/*",
-    "https://dev.to/*"
+    "https://dev.to/*",
+    "https://studio.youtube.com/*",
+    "https://www.youtube.com/*"
   ],
   "content_scripts": [
     {
       "matches": [
         "https://medium.com/*",
         "https://*.medium.com/*",
-        "https://dev.to/*"
+        "https://dev.to/*",
+        "https://studio.youtube.com/*",
+        "https://www.youtube.com/*"
       ],
       "js": ["src/content/index.tsx"],
       "css": ["src/styles/tailwind.css"],
@@ -41,7 +45,9 @@
       "matches": [
         "https://medium.com/*",
         "https://*.medium.com/*",
-        "https://dev.to/*"
+        "https://dev.to/*",
+        "https://studio.youtube.com/*",
+        "https://www.youtube.com/*"
       ]
     }
   ]

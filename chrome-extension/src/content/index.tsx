@@ -2,6 +2,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from '../panel/App';
 import { linkProductsFromDevto } from '../lib/devtoDom';
+import { isYouTubeUploadPage } from '../lib/youtubeDom';
+import YouTubeTranscriptionPanel from '../panel/YouTubeTranscription';
 
 function injectDevtoButton() {
   // Check if button already exists
@@ -88,8 +90,38 @@ function injectDevtoButton() {
   document.body.appendChild(button);
 }
 
+function mountYouTubePanel() {
+  if (document.getElementById('youtube-transcription-panel-root')) {
+    console.log('[YouTube Transcription] Panel already mounted');
+    return;
+  }
+
+  console.log('[YouTube Transcription] Mounting panel on YouTube Studio');
+  
+  const container = document.createElement('div');
+  container.id = 'youtube-transcription-panel-root';
+  document.body.appendChild(container);
+
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <YouTubeTranscriptionPanel />
+    </React.StrictMode>
+  );
+  
+  console.log('[YouTube Transcription] Panel mounted successfully');
+}
+
 function mountPanel() {
   const isDevto = location.hostname === 'dev.to';
+  const isYouTube = isYouTubeUploadPage();
+  
+  console.log('[Content Script] Page detection:', {
+    hostname: location.hostname,
+    pathname: location.pathname,
+    isDevto,
+    isYouTube
+  });
   
   if (isDevto) {
     // For dev.to, inject button instead of React panel
@@ -100,6 +132,27 @@ function mountPanel() {
       }, { once: true });
     } else {
       setTimeout(injectDevtoButton, 300);
+    }
+  } else if (isYouTube) {
+    // For YouTube Studio, inject transcription panel
+    console.log('[Content Script] YouTube Studio detected, will mount panel');
+    const mountWithRetry = (retries = 3) => {
+      if (document.body && document.body.children.length > 0) {
+        mountYouTubePanel();
+      } else if (retries > 0) {
+        console.log(`[Content Script] Body not ready, retrying in 500ms (${retries} retries left)`);
+        setTimeout(() => mountWithRetry(retries - 1), 500);
+      } else {
+        console.error('[Content Script] Failed to mount panel after retries');
+      }
+    };
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => mountWithRetry(), 1000);
+      }, { once: true });
+    } else {
+      setTimeout(() => mountWithRetry(), 1000);
     }
   } else {
     // For Medium, use React panel as before
