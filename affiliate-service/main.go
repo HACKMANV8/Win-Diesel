@@ -20,6 +20,9 @@ func main() {
 	// POST endpoint to create custom affiliate links
 	router.POST("/api/custom-affiliate/create", handler.CreateAffiliateLinks)
 
+	// POST endpoint to process markdown and inject affiliate links
+	router.POST("/api/markdown/affiliate", handler.AffiliateMarkdown)
+
 	// GET endpoint to handle redirects
 	router.GET("/:customerId/:productName", handler.RedirectToAffiliate)
 
