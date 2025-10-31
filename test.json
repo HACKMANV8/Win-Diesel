@@ -1,0 +1,26 @@
+{
+  "content": "okay so last week I tried my friend’s Samsung Galaxy S24 Ultra and wow the zoom was nuts. I’m also thinking about grabbing the Sony WH-1000XM5 for travel—my AirPods Pro are fine but I want better noise canceling. oh and for the desk setup, I might switch to the Aula F75 mechanical keyboard, the RGB looks clean. I also want to buy reMarkable Starter Bundle – reMarkable 2.",
+  "use_gemini": true,
+  "products": [
+    {
+      "product_name": "Samsung Galaxy S24 Ultra",
+      "custom_link": "https://1afe71742170.ngrok-free.app/CUST001/samsung-galaxy-s24-ultra"
+    },
+    {
+      "product_name": "Sony WH-1000XM5",
+      "custom_link": "https://1afe71742170.ngrok-free.app/CUST001/sony-wh-1000xm5"
+    },
+    {
+      "product_name": "AirPods Pro",
+      "custom_link": "https://1afe71742170.ngrok-free.app/CUST001/airpods-pro"
+    },
+    {
+      "product_name": "Aula F75",
+      "custom_link": "https://1afe71742170.ngrok-free.app/CUST001/aula-f75"
+    },
+    {
+      "product_name": "reMarkable 2",
+      "custom_link": "https://1afe71742170.ngrok-free.app/CUST001/remarkable-2"
+    }
+  ]
+}

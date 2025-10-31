@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "Affiliate Linker for Medium (MVP)",
+  "version": "0.1.0",
+  "description": "Scan Medium articles for products and apply Amazon.in affiliate links.",
+  "action": {
+    "default_title": "Affiliate Linker"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://medium.com/*",
+    "https://*.medium.com/*",
+    "https://dev.to/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://medium.com/*",
+        "https://*.medium.com/*",
+        "https://dev.to/*"
+      ],
+      "js": ["src/content/index.tsx"],
+      "css": ["src/styles/tailwind.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/styles/tailwind.css"
+      ],
+      "matches": [
+        "https://medium.com/*",
+        "https://*.medium.com/*",
+        "https://dev.to/*"
+      ]
+    }
+  ]
+}
+
+

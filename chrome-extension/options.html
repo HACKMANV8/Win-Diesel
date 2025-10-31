@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Affiliate Linker Options</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import React from 'react';
+      import { createRoot } from 'react-dom/client';
+      import './src/styles/tailwind.css';
+      import OptionsApp from './src/options/App.tsx';
+      const root = createRoot(document.getElementById('app'));
+      root.render(React.createElement(React.StrictMode, null, React.createElement(OptionsApp)));
+    </script>
+  </body>
+  </html>
+
+
