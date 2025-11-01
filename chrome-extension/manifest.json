@@ -21,7 +21,9 @@
     "https://*.medium.com/*",
     "https://dev.to/*",
     "https://studio.youtube.com/*",
-    "https://www.youtube.com/*"
+    "https://www.youtube.com/*",
+    "https://twitter.com/*",
+    "https://x.com/*"
   ],
   "content_scripts": [
     {
@@ -30,7 +32,9 @@
         "https://*.medium.com/*",
         "https://dev.to/*",
         "https://studio.youtube.com/*",
-        "https://www.youtube.com/*"
+        "https://www.youtube.com/*",
+        "https://twitter.com/*",
+        "https://x.com/*"
       ],
       "js": ["src/content/index.tsx"],
       "css": ["src/styles/tailwind.css"],
@@ -47,7 +51,9 @@
         "https://*.medium.com/*",
         "https://dev.to/*",
         "https://studio.youtube.com/*",
-        "https://www.youtube.com/*"
+        "https://www.youtube.com/*",
+        "https://twitter.com/*",
+        "https://x.com/*"
       ]
     }
   ]
