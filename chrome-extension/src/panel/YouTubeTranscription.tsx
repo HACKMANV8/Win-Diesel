@@ -10,6 +10,11 @@ export default function YouTubeTranscriptionPanel() {
   const [fileName, setFileName] = useState<string>('');
   const [products, setProducts] = useState<ProductLink[]>([]);
   const [linkingStatus, setLinkingStatus] = useState<'idle' | 'creating' | 'success' | 'error'>('idle');
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    // Load collapse state from localStorage
+    const saved = localStorage.getItem('youtube-transcription-collapsed');
+    return saved === 'true';
+  });
 
   useEffect(() => {
     console.log('[YouTube Transcription Panel] Component mounted, setting up file interceptor');
@@ -335,6 +340,15 @@ export default function YouTubeTranscriptionPanel() {
     };
   }, []);
 
+  // Persist collapse state to localStorage
+  useEffect(() => {
+    localStorage.setItem('youtube-transcription-collapsed', String(isCollapsed));
+  }, [isCollapsed]);
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   const getStatusText = () => {
     switch (status) {
       case 'idle':
@@ -358,8 +372,8 @@ export default function YouTubeTranscriptionPanel() {
         position: 'fixed',
         bottom: '20px',
         right: '20px',
-        width: '400px',
-        maxHeight: '600px',
+        width: '320px',
+        maxHeight: isCollapsed ? '60px' : '450px',
         backgroundColor: 'white',
         border: '1px solid #e0e0e0',
         borderRadius: '8px',
@@ -368,24 +382,82 @@ export default function YouTubeTranscriptionPanel() {
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'system-ui, -apple-system, sans-serif',
+        transition: 'max-height 0.3s ease-in-out',
+        overflow: 'hidden',
       }}
     >
       <div
         style={{
-          padding: '16px',
-          borderBottom: '1px solid #e0e0e0',
+          padding: '12px 16px',
+          borderBottom: isCollapsed ? 'none' : '1px solid #e0e0e0',
           backgroundColor: '#f8f9fa',
           borderTopLeftRadius: '8px',
           borderTopRightRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          userSelect: 'none',
         }}
+        onClick={toggleCollapse}
       >
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#333' }}>
-          🎬 Video Transcription
-        </h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#333' }}>
+            🎬 Video Transcription
+          </h3>
+          {isCollapsed && status !== 'idle' && (
+            <span
+              style={{
+                fontSize: '11px',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                backgroundColor:
+                  status === 'completed'
+                    ? '#d4edda'
+                    : status === 'error'
+                    ? '#f8d7da'
+                    : '#fff3cd',
+                color:
+                  status === 'completed'
+                    ? '#155724'
+                    : status === 'error'
+                    ? '#721c24'
+                    : '#856404',
+                fontWeight: 500,
+              }}
+            >
+              {status === 'uploading' && '⏫'}
+              {status === 'transcribing' && '⏳'}
+              {status === 'completed' && '✓'}
+              {status === 'error' && '✗'}
+            </span>
+          )}
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleCollapse();
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            fontSize: '16px',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            color: '#666',
+            lineHeight: 1,
+            transition: 'transform 0.3s ease-in-out',
+            transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)',
+          }}
+          title={isCollapsed ? 'Expand' : 'Collapse'}
+        >
+          ▼
+        </button>
       </div>
 
-      <div style={{ padding: '16px', overflowY: 'auto', flex: 1 }}>
-        {fileName && (
+      {!isCollapsed && (
+        <div style={{ padding: '16px', overflowY: 'auto', flex: 1 }}>
+          {fileName && (
           <div style={{ marginBottom: '12px', fontSize: '12px', color: '#666' }}>
             <strong>File:</strong> {fileName}
           </div>
@@ -598,7 +670,8 @@ export default function YouTubeTranscriptionPanel() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       <style>
         {`
